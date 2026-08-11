@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניתוח מקיף של מערכת MAED - סבא"א (IAEA)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                            700: '#1e40af',
+                            800: '#1e3a8a',
+                            900: '#172554',
+                        },
+                        accent: {
+                            500: '#06b6d4',
+                            600: '#0891b2',
+                            700: '#0e7490'
+                        }
+                    },
+                    fontFamily: {
+                        hebrew: ['Rubik', 'Heebo', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts for Hebrew -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- MathJax for rendering math formulas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            font-family: 'Rubik', 'Heebo', sans-serif;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .print-full-width { width: 100% !important; max-width: 100% !important; }
+            body { background: white !important; color: black !important; }
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(37, 99, 235, 0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(37, 99, 235, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200 min-h-screen flex flex-col">
+
+    <!-- Top Fixed Bar (Google Docs / Executive Report Toolbar Style) -->
+    <header class="no-print sticky top-0 z-50 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 shadow-sm px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <!-- Document Title & Icon -->
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">ניתוח של מערכת MAED</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Model for Analysis of Energy Demand • הסוכנות הבינלאומית לאנרגיה אטומית (IAEA)</p>
+                </div>
+            </div>
+
+            <!-- Quick Action Toolbar Buttons -->
+            <div class="flex items-center space-x-2 space-x-reverse text-sm">
+                <button onclick="handlePrint()" class="flex items-center space-x-1.5 space-x-reverse px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                    </svg>
+                    <span>הדפסה / PDF</span>
+                </button>
+                <button id="themeToggleBtn" onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition">
+                    <!-- Sun Icon -->
+                    <svg id="sunIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <!-- Moon Icon -->
+                    <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <div class="max-w-7xl mx-auto px-4 py-8 flex-1 grid grid-cols-1 lg:grid-cols-4 gap-8 w-full">
+        
+        <!-- Sidebar Navigation (TOC) -->
+        <aside class="no-print lg:col-span-1 space-y-4">
+            <div class="sticky top-24 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm">
+                <h3 class="text-sm font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+                    </svg>
+                    תוכן העניינים
+                </h3>
+                <nav class="space-y-1.5 text-sm">
+                    <a href="#intro" class="block py-2 px-3 rounded-lg font-medium text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 transition">1. מבוא ורקע</a>
+                    <a href="#goals" class="block py-2 px-3 rounded-lg font-medium text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 transition">2. מטרות המערכת</a>
+                    <a href="#capabilities" class="block py-2 px-3 rounded-lg font-medium text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 transition">3. גישת המודל והיכולות</a>
+                    <a href="#architecture" class="block py-2 px-3 rounded-lg font-medium text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 transition">4. מבנה המודל והמודולים (תרשים)</a>
+                    <a href="#workflow" class="block py-2 px-3 rounded-lg font-medium text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 transition">5. תהליך העבודה (7 שלבים)</a>
+                    <a href="#pros-cons" class="block py-2 px-3 rounded-lg font-medium text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 transition">6. יתרונות ומגבלות</a>
+                    <a href="#summary" class="block py-2 px-3 rounded-lg font-medium text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 transition">7. סיכום והמלצות</a>
+                </nav>
+
+                <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
+                    <div class="bg-blue-50 dark:bg-blue-950/40 p-3.5 rounded-xl border border-blue-100 dark:border-blue-900/50">
+                        <p class="text-xs font-semibold text-blue-800 dark:text-blue-300 mb-1">הידעת?</p>
+                        <p class="text-xs text-blue-600 dark:text-blue-400 leading-relaxed">
+                            MAED מספקת את קלט הצריכה המדויק למודל ההיצע **MESSAGE**, המשמש לתכנון תחנות כוח ומקורות אנרגיה חלופיים.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Document Main Body -->
+        <main class="lg:col-span-3 space-y-10 print-full-width">
+
+            <!-- Title Banner -->
+            <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-3xl p-8 sm:p-10 shadow-xl relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-10 -top-10 w-60 h-60 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10 space-y-3">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-200 text-xs font-semibold backdrop-blur-sm border border-blue-400/30">
+                        <span>סבא"א / IAEA Official Methodology</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-black text-white leading-tight">
+                        ניתוח מקיף של מערכת MAED
+                    </h1>
+                    <p class="text-lg text-blue-100 font-light max-w-2xl">
+                        Model for Analysis of Energy Demand • כלי תכנוני מתקדם להערכה וחיזוי של הביקוש לאנרגיה בטווח הבינוני והארוך.
+                    </p>
+                    <div class="pt-4 flex flex-wrap gap-4 text-xs text-blue-200 border-t border-white/10">
+                        <div><span class="opacity-70">טווח תחזית:</span> <strong class="text-white">20-50 שנה</strong></div>
+                        <div>•</div>
+                        <div><span class="opacity-70">גישת חישוב:</span> <strong class="text-white">Bottom-Up Engineering</strong></div>
+                        <div>•</div>
+                        <div><span class="opacity-70">מפתח:</span> <strong class="text-white">הסוכנות הבינלאומית לאנרגיה אטומית</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 1: Intro -->
+            <section id="intro" class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-4">
+                <div class="flex items-center gap-3">
+                    <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-300 font-bold text-lg">1</span>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">מבוא ורקע</h2>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                    מערכת <strong class="text-slate-900 dark:text-white">MAED</strong> (ראשי תיבות של <em class="not-italic font-semibold text-blue-600 dark:text-blue-400">Model for Analysis of Energy Demand</em>) היא כלי תכנוני מתקדם שפותח על ידי הסוכנות הבינלאומית לאנרגיה אטומית (<strong class="text-slate-900 dark:text-white">סבא"א / IAEA</strong>). המודל משמש מדינות, גופי תכנון ומכוני מחקר ברחבי העולם להערכה ולחיזוי של הביקוש לאנרגיה בטווח הבינוני והארוך (כ-20 עד 50 שנה קדימה).
+                </p>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                    MAED תוכננה לתת מענה לצורך של מתכנני מדיניות להבין <strong class="text-slate-800 dark:text-slate-100 underline decoration-blue-500 decoration-2 underline-offset-4">כיצד</strong> ו<strong class="text-slate-800 dark:text-slate-100 underline decoration-blue-500 decoration-2 underline-offset-4">מדוע</strong> ישתנה הביקוש לאנרגיה כתוצאה משינויים דמוגרפיים, צמיחה כלכלית, התפתחות טכנולוגית, ומדיניות ירוקה או התנהגותית.
+                </p>
+            </section>
+
+            <!-- Section 2: Goals -->
+            <section id="goals" class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-6">
+                <div class="flex items-center gap-3">
+                    <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-300 font-bold text-lg">2</span>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">מטרות המערכת</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Goal Card 1 -->
+                    <div class="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-blue-50/40 dark:from-slate-800/80 dark:to-slate-700/50 border border-slate-200/60 dark:border-slate-700 space-y-2 hover:border-blue-400 transition">
+                        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20 mb-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2"/></svg>
+                        </div>
+                        <h3 class="font-bold text-slate-900 dark:text-white text-base">1. ניתוח הביקוש העתידי</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            מתן חיזוי מפורט של הביקוש לאנרגיה ולחשמל לפי סקטורים, שימושי קצה וסוגי דלקים/מקורות אנרגיה.
+                        </p>
+                    </div>
+
+                    <!-- Goal Card 2 -->
+                    <div class="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-blue-50/40 dark:from-slate-800/80 dark:to-slate-700/50 border border-slate-200/60 dark:border-slate-700 space-y-2 hover:border-blue-400 transition">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20 mb-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </div>
+                        <h3 class="font-bold text-slate-900 dark:text-white text-base">2. בניית תרחישי מדיניות</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            בחינת השפעות מדיניות ציבורית (שיפור יעילות, תחבורה חשמלית, שינוי במבנה הכלכלי) על משק האנרגיה.
+                        </p>
+                    </div>
+
+                    <!-- Goal Card 3 -->
+                    <div class="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-blue-50/40 dark:from-slate-800/80 dark:to-slate-700/50 border border-slate-200/60 dark:border-slate-700 space-y-2 hover:border-blue-400 transition">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-600 text-white flex items-center justify-center shadow-md shadow-cyan-500/20 mb-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                        </div>
+                        <h3 class="font-bold text-slate-900 dark:text-white text-base">3. חישוב עקומות עומס שעתיות</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            גזירת עקומת עומס שעתית (Peak Demand) הנדרשת לתכנון פיתוח רשת החשמל ותחנות הכוח.
+                        </p>
+                    </div>
+
+                    <!-- Goal Card 4 -->
+                    <div class="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-blue-50/40 dark:from-slate-800/80 dark:to-slate-700/50 border border-slate-200/60 dark:border-slate-700 space-y-2 hover:border-blue-400 transition">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/20 mb-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        </div>
+                        <h3 class="font-bold text-slate-900 dark:text-white text-base">4. בסיס לתכנון צד ההיצע</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            יצירת תמונת ביקוש אמינה המשמשת כקלט (Input) למודלי אופטימיזציה כגון **MESSAGE** או **WASP**.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Capabilities -->
+            <section id="capabilities" class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-6">
+                <div class="flex items-center gap-3">
+                    <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-300 font-bold text-lg">3</span>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">גישת המודל והיכולות המרכזיות</h2>
+                </div>
+
+                <!-- Capability A: Bottom Up -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                        א. גישת "מלמטה למעלה" (Bottom-Up Engineering-Economic)
+                    </h3>
+                    <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+                        בניגוד למודלים אקונומטריים המבוססים אך ורק על קשרים סטטיסטיים כלליים בין התוצר המקומי גולמי (GDP) לביקוש לאנרגיה, MAED משתמשת בגישה הנדסית-כלכלית מפורטת:
+                    </p>
+                    <ul class="list-disc list-inside text-sm text-slate-600 dark:text-slate-300 space-y-1 pr-4">
+                        <li>המערכת מפרקת את הכלכלה לסקטורים, תת-סקטורים ופעילויות ספציפיות.</li>
+                        <li>החישוב מבוסס על פרמטרים פיזיקליים וטכנולוגיים (קילומטר-נוסע, טון-פלדה, מטר רבוע ממוזג ועוצמת אנרגיה).</li>
+                    </ul>
+                </div>
+
+                <!-- Capability B: Formula Box -->
+                <div class="p-6 rounded-2xl bg-slate-900 text-white shadow-lg space-y-4">
+                    <h3 class="text-lg font-bold text-blue-400 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        ב. הבחנה בין אנרגיה שימושית לאנרגיה סופית
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-300">
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                            <strong class="text-white block mb-1">אנרגיה שימושית (\(E_{useful}\)):</strong>
+                            האנרגיה הנדרשת לביצוע השירות בפועל (כגון חום הנדרש לחימום מים, עבודה מכנית להנעת רכב).
+                        </div>
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                            <strong class="text-white block mb-1">אנרגיה סופית (\(E_{final}\)):</strong>
+                            כמות האנרגיה הנרכשת (דלק, חשמל, גז) הלוקחת בחשבון את יעילות הציוד הממיר.
+                        </div>
+                    </div>
+                    <!-- Mathematical Callout -->
+                    <div class="bg-blue-950/80 border border-blue-500/30 p-4 rounded-xl text-center">
+                        <p class="text-xs text-blue-300 mb-1">נוסחת המרת אנרגיה במודל:</p>
+                        <div class="text-xl sm:text-2xl font-mono text-cyan-300 tracking-wider">
+                            \[ E_{final} = \frac{E_{useful}}{\eta} \]
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1">כאשר \(\eta\) מייצג את מקדם היעילות הטכנולוגית של הציוד (Efficiency).</p>
+                    </div>
+                </div>
+
+                <!-- Capability C: Sectoral Cards -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                        ג. חלוקה סקטוריאלית מפורטת
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-700/40 border border-slate-200 dark:border-slate-700">
+                            <strong class="text-slate-900 dark:text-white text-sm block mb-1">🏭 תעשייה (Industry)</strong>
+                            תעשייה עתירת אנרגיה (כימיקלים, מתכת, בטון) מול תעשייה קלה.
+                        </div>
+                        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-700/40 border border-slate-200 dark:border-slate-700">
+                            <strong class="text-slate-900 dark:text-white text-sm block mb-1">🚗 תחבורה (Transportation)</strong>
+                            חלוקה לנוסעים ומטען; רכבים פרטיים, אוטובוסים, רכבות, תעופה, ורכבים חשמליים.
+                        </div>
+                        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-700/40 border border-slate-200 dark:border-slate-700">
+                            <strong class="text-slate-900 dark:text-white text-sm block mb-1">🏠 משקי בית (Residential)</strong>
+                            חימום/קירור מבנים, בישול, תאורה ומכשירים חשמליים לפי גודל משפחה ושטח.
+                        </div>
+                        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-700/40 border border-slate-200 dark:border-slate-700">
+                            <strong class="text-slate-900 dark:text-white text-sm block mb-1">🏢 מסחר ושירותים (Services)</strong>
+                            מבני ציבור, מסחר, מלונאות ומשרדים (קירור, תאורה, ציוד משרדי).
+                        </div>
+                        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-700/40 border border-slate-200 dark:border-slate-700">
+                            <strong class="text-slate-900 dark:text-white text-sm block mb-1">🌾 חקלאות (Agriculture)</strong>
+                            שאיבת מים, מיכון חקלאי וחימום חממות.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Model Architecture Diagram -->
+            <section id="architecture" class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-6">
+                <div class="flex items-center gap-3">
+                    <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-300 font-bold text-lg">4</span>
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">מבנה המודל והמודולים</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">תרשים זרימה ארכיטקטוני גרפי של רכיבי מערכת MAED</p>
+                    </div>
+                </div>
+
+                <!-- Styled Graphical SVG / Dynamic Visual Pipeline replacing ASCII -->
+                <div class="bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-800 shadow-2xl relative overflow-hidden">
+                    <div class="max-w-xl mx-auto space-y-4 relative z-10">
+                        
+                        <!-- Node 1 -->
+                        <div class="group relative bg-gradient-to-r from-slate-800 to-slate-800/90 hover:from-blue-900/50 hover:to-slate-800 p-4 rounded-xl border border-slate-700 hover:border-blue-500 shadow-md transition duration-300 text-center cursor-pointer">
+                            <div class="flex items-center justify-center gap-3">
+                                <span class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-sm">1</span>
+                                <span class="text-slate-100 font-bold text-base">נתונים דמוגרפיים ומאקרו-כלכליים</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">אוכלוסייה, GDP, גודל משק בית, רמת עירוניות</p>
+                        </div>
+
+                        <!-- Directional Arrow 1 -->
+                        <div class="flex justify-center my-1">
+                            <svg class="w-8 h-8 text-blue-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                            </svg>
+                        </div>
+
+                        <!-- Node 2 -->
+                        <div class="group relative bg-gradient-to-r from-slate-800 to-slate-800/90 hover:from-indigo-900/50 hover:to-slate-800 p-4 rounded-xl border border-slate-700 hover:border-indigo-500 shadow-md transition duration-300 text-center cursor-pointer">
+                            <div class="flex items-center justify-center gap-3">
+                                <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">2</span>
+                                <span class="text-slate-100 font-bold text-base">מודול פעילות אנרגיה שימושית</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">חישוב רמת הפעילות הפיזית והביקוש לאנרגיה שימושית לפי סקטורים</p>
+                        </div>
+
+                        <!-- Directional Arrow 2 -->
+                        <div class="flex justify-center my-1">
+                            <svg class="w-8 h-8 text-indigo-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                            </svg>
+                        </div>
+
+                        <!-- Node 3 -->
+                        <div class="group relative bg-gradient-to-r from-slate-800 to-slate-800/90 hover:from-cyan-900/50 hover:to-slate-800 p-4 rounded-xl border border-slate-700 hover:border-cyan-500 shadow-md transition duration-300 text-center cursor-pointer">
+                            <div class="flex items-center justify-center gap-3">
+                                <span class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-sm">3</span>
+                                <span class="text-slate-100 font-bold text-base">מודול המרה לאנרגיה סופית ודלקים</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">תרגום לאנרגיה סופית בהתחשב ביעילות טכנולוגית ותפריט דלקים</p>
+                        </div>
+
+                        <!-- Directional Arrow 3 -->
+                        <div class="flex justify-center my-1">
+                            <svg class="w-8 h-8 text-cyan-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                            </svg>
+                        </div>
+
+                        <!-- Node 4 (Highlight Target) -->
+                        <div class="group relative bg-gradient-to-r from-blue-600 to-cyan-600 p-4 rounded-xl border border-cyan-400 shadow-lg shadow-cyan-500/20 text-center cursor-pointer transform hover:scale-105 transition duration-300">
+                            <div class="flex items-center justify-center gap-3">
+                                <span class="w-8 h-8 rounded-lg bg-white/20 text-white flex items-center justify-center font-bold text-sm">4</span>
+                                <span class="text-white font-extrabold text-lg">מודול עקומת עומס חשמל (MAED-EL)</span>
+                            </div>
+                            <p class="text-xs text-blue-100 mt-1">גזירת עקומת עומס שעתית ל-8,760 שעות השנה וזיהוי שיא הביקוש (Peak Demand)</p>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: Workflow Timeline -->
+            <section id="workflow" class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-6">
+                <div class="flex items-center gap-3">
+                    <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-300 font-bold text-lg">5</span>
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">תהליך העבודה מול המערכת (Workflow)</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">מתודולוגיית 7 השלבים לביצוע חיזוי ותכנון אנרגטי במודל MAED</p>
+                    </div>
+                </div>
+
+                <!-- Graphical Interactive 7-Step Timeline replacing ASCII -->
+                <div class="relative space-y-4 before:absolute before:inset-0 before:right-6 before:w-1 before:bg-gradient-to-b before:from-blue-600 before:via-indigo-500 before:to-emerald-500 before:rounded-full">
+                    
+                    <!-- Step 1 -->
+                    <div class="relative flex items-start space-x-4 space-x-reverse group">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white font-bold flex items-center justify-center shadow-md shadow-blue-500/30 z-10 shrink-0 group-hover:scale-110 transition">
+                            1
+                        </div>
+                        <div class="flex-1 bg-slate-50 dark:bg-slate-700/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1 hover:border-blue-400 transition">
+                            <h3 class="font-bold text-slate-900 dark:text-white text-base">שלב 1: איסוף נתונים והגדרת שנת בסיס (Base Year)</h3>
+                            <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-1 list-disc list-inside">
+                                <li>בחירת שנת ייחוס (למשל, 2022) שעבורה קיימים נתונים סטטיסטיים מלאים ואמינים.</li>
+                                <li>איסוף נתוני מאקרו: אוכלוסייה, התפלגות עירונית/כפרית, התוצר לפי ענפים.</li>
+                                <li>איסוף נתוני צריכת אנרגיה בפועל לפי סקטורים ודלקים (מאזן אנרגיה לאומי).</li>
+                                <li>כיול המודל לשנת הבסיס כדי לוודא שתוצאות המודל תואמות את הנתונים ההיסטוריים בפועל.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="relative flex items-start space-x-4 space-x-reverse group">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white font-bold flex items-center justify-center shadow-md shadow-blue-500/30 z-10 shrink-0 group-hover:scale-110 transition">
+                            2
+                        </div>
+                        <div class="flex-1 bg-slate-50 dark:bg-slate-700/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1 hover:border-blue-400 transition">
+                            <h3 class="font-bold text-slate-900 dark:text-white text-base">שלב 2: הגדרת תרחישים עתידיים (Scenario Definition)</h3>
+                            <p class="text-xs text-slate-600 dark:text-slate-300">פיתוח תרחישים עתידיים ("עסקים כרגיל", "מעבר ירוק/התייעלות", "צמיחה מואצת"):</p>
+                            <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-1 list-disc list-inside">
+                                <li>שיעורי צמיחה דמוגרפית וכלכלית.</li>
+                                <li>שינויים מבניים בכלכלה (מעבר מתעשייה כבדה לשירותים ותקשוב).</li>
+                                <li>חדירת טכנולוגיות חדשות (רכבים חשמליים, משאבות חום).</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="relative flex items-start space-x-4 space-x-reverse group">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white font-bold flex items-center justify-center shadow-md shadow-indigo-500/30 z-10 shrink-0 group-hover:scale-110 transition">
+                            3
+                        </div>
+                        <div class="flex-1 bg-slate-50 dark:bg-slate-700/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1 hover:border-indigo-400 transition">
+                            <h3 class="font-bold text-slate-900 dark:text-white text-base">שלב 3: הזנת הפרמטרים והמקדמים למערכת</h3>
+                            <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-1 list-disc list-inside">
+                                <li>הזנת מקדמי עוצמת אנרגיה (Energy Intensities) לכל סקטור ותת-סקטור.</li>
+                                <li>הזנת נתוני יעילות المרה לפי טכנולוגיה וסוג דלק.</li>
+                                <li>הזנת סדרות עומס יומיות/עונתיות לחישוב הביקוש החשמלי.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="relative flex items-start space-x-4 space-x-reverse group">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white font-bold flex items-center justify-center shadow-md shadow-indigo-500/30 z-10 shrink-0 group-hover:scale-110 transition">
+                            4
+                        </div>
+                        <div class="flex-1 bg-slate-50 dark:bg-slate-700/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1 hover:border-indigo-400 transition">
+                            <h3 class="font-bold text-slate-900 dark:text-white text-base">שלב 4: הרצת המודל וחישוב הביקושים</h3>
+                            <p class="text-xs text-slate-600 dark:text-slate-300">
+                                המודל מציב את הנתונים בנוסחאות המודולריות ומחשב את הביקוש לאנרגיה שימושית ולאחר מכן לאנרגיה סופית לכל שנת יעד.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 5 -->
+                    <div class="relative flex items-start space-x-4 space-x-reverse group">
+                        <div class="w-12 h-12 rounded-2xl bg-cyan-600 text-white font-bold flex items-center justify-center shadow-md shadow-cyan-500/30 z-10 shrink-0 group-hover:scale-110 transition">
+                            5
+                        </div>
+                        <div class="flex-1 bg-slate-50 dark:bg-slate-700/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1 hover:border-cyan-400 transition">
+                            <h3 class="font-bold text-slate-900 dark:text-white text-base">שלב 5: ניתוח תוצאות, תיקוף ובקרת איכות</h3>
+                            <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-1 list-disc list-inside">
+                                <li>בחינת הגיוניות התוצאות (Sensitivity Analysis).</li>
+                                <li>ניתוח התפלגות הצריכה לפי סוגי דלקים (חשמל, תזקיקי נפט, גז טבעי, אנרגיה מתחדשת).</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Step 6 -->
+                    <div class="relative flex items-start space-x-4 space-x-reverse group">
+                        <div class="w-12 h-12 rounded-2xl bg-cyan-600 text-white font-bold flex items-center justify-center shadow-md shadow-cyan-500/30 z-10 shrink-0 group-hover:scale-110 transition">
+                            6
+                        </div>
+                        <div class="flex-1 bg-slate-50 dark:bg-slate-700/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1 hover:border-cyan-400 transition">
+                            <h3 class="font-bold text-slate-900 dark:text-white text-base">שלב 6: הפקת עקומת עומס שעתי (MAED-EL)</h3>
+                            <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-1 list-disc list-inside">
+                                <li>יצירת פרופיל הביקוש השעתי לחשמל (8,760 שעות) לשנות היעד.</li>
+                                <li>זיהוי שיא הביקוש (Peak Load ב-MW) ומספר שעות השיא.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Step 7 -->
+                    <div class="relative flex items-start space-x-4 space-x-reverse group">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white font-bold flex items-center justify-center shadow-md shadow-emerald-500/30 z-10 shrink-0 group-hover:scale-110 transition">
+                            7
+                        </div>
+                        <div class="flex-1 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-slate-700 dark:to-slate-700/80 p-4 rounded-2xl border border-emerald-300 dark:border-emerald-600 space-y-1 hover:border-emerald-500 transition">
+                            <h3 class="font-bold text-slate-900 dark:text-white text-base">שלב 7: אינטגרציה עם מודלים של היצע (MESSAGE/WASP)</h3>
+                            <p class="text-xs text-slate-600 dark:text-slate-300">
+                                העברת תוצאות הביקוש הסופי ועקומות העומס אל מודלים כדוגמת **MESSAGE** (לבחינת תפריט ייצור החשמל והשקעות בתשתיות) או **WASP** (לתכנון הרחבת מערך ייצור החשמל).
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Section 6: Pros and Cons -->
+            <section id="pros-cons" class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-6">
+                <div class="flex items-center gap-3">
+                    <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-300 font-bold text-lg">6</span>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">יתרונות ומגבלות המערכת</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Pros -->
+                    <div class="bg-emerald-50/50 dark:bg-emerald-950/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800/50 space-y-4">
+                        <div class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-bold text-lg">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <h3>יתרונות מרכזיים</h3>
+                        </div>
+                        <ul class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
+                                <div><strong>פירוט רב והבנת מנועי הביקוש:</strong> מציגה בדיוק מאיפה מגיע הביקוש ולא רק תחזית סטטיסטית כללית.</div>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
+                                <div><strong>גמישות בתרחישים:</strong> מאפשרת לבחון שינויי מדיניות, רגולציה וטכנולוגיות חדשות.</div>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
+                                <div><strong>אינטגרציה מובנית:</strong> התאמה מלאה למודלי היצע של סבא"א (MESSAGE/WASP).</div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Cons -->
+                    <div class="bg-amber-50/50 dark:bg-amber-950/20 rounded-2xl p-6 border border-amber-200 dark:border-amber-800/50 space-y-4">
+                        <div class="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-bold text-lg">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            <h3>מגבלות ועדכונים נדרשים</h3>
+                        </div>
+                        <ul class="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-600 dark:text-amber-400 font-bold">!</span>
+                                <div><strong>דרישת נתונים גבוהה (Data Intensive):</strong> מחייבת איסוף נתונים מפורט מאוד שלעיתים אינו זמין.</div>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-600 dark:text-amber-400 font-bold">!</span>
+                                <div><strong>אינה כוללת מנגנון מחירים (Non-Price):</strong> המודל אינו מחשב באופן אוטומטי אלסטיות מחירים.</div>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-600 dark:text-amber-400 font-bold">!</span>
+                                <div><strong>תלויות בהנחות המשתמש:</strong> התוצאות תלויות לחלוטין באיכות ההנחות המאקרו-כלכליות והטכנולוגיות.</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 7: Summary -->
+            <section id="summary" class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800 p-8 rounded-3xl border border-blue-200 dark:border-slate-700 shadow-sm space-y-4">
+                <div class="flex items-center gap-3">
+                    <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-blue-600 text-white font-bold text-lg">7</span>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">סיכום</h2>
+                </div>
+                <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+                    מערכת <strong class="text-slate-900 dark:text-white">MAED</strong> מהווה כלי מרכזי בעולם לתכנון אנרגיה ארוך טווח. עבודה נכונה מול המערכת דורשת שיתוף פעולה בין-משרדי ובינאגפי (משרדי אנרגיה, הלשכה המרכזית לסטטיסטיקה, משרדי תחבורה וכלכלה) לצורך איסוף נתוני הבסיס וגיבוש תרחישי המדיניות. התוצר המתקבל מעניק למתכננים מפת דרכים ברורה של צורכי האנרגיה העתידיים, המהווה נדבך קריטי בקבלת החלטות על השקעות בתשתיות לאומיות.
+                </p>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="no-print bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 py-6 mt-12 text-center text-xs text-slate-500 dark:text-slate-400">
+        <p>דוח מקיף - מערכת MAED של סבא"א (IAEA Model for Analysis of Energy Demand) • מוגש בפורמט HTML דינמי</p>
+    </footer>
+
+    <!-- Print Notice Modal for Iframe Limitations -->
+    <div id="printNoticeModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4 text-center">
+            <div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto text-xl">
+                🖨️
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">הנחיות להדפסה / שמירה כ-PDF</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                אם תפריט ההדפסה אינו נפתח אוטומטית עקב הגדרות האבטחה של הדפדפן בתצוגה המקדימה, ניתן להשתמש במקשים:
+            </p>
+            <div class="bg-slate-100 dark:bg-slate-700/50 p-3 rounded-xl text-xs text-slate-700 dark:text-slate-200 font-mono">
+                <kbd class="px-2 py-1 bg-white dark:bg-slate-800 rounded border shadow-sm">Ctrl + P</kbd> (Windows) או <kbd class="px-2 py-1 bg-white dark:bg-slate-800 rounded border shadow-sm">Cmd + P</kbd> (Mac)
+            </div>
+            <button onclick="closePrintNotice()" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition">
+                הבנתי, סגור
+            </button>
+        </div>
+    </div>
+
+    <!-- Interactive Logic Script -->
+    <script>
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const sunIcon = document.getElementById('sunIcon');
+            const moonIcon = document.getElementById('moonIcon');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            } else {
+                html.classList.add('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+        }
+
+        function handlePrint() {
+            try {
+                window.focus();
+                // Attempt standard window.print
+                window.print();
+            } catch (e) {
+                showPrintNotice();
+            }
+        }
+
+        function showPrintNotice() {
+            const modal = document.getElementById('printNoticeModal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closePrintNotice() {
+            const modal = document.getElementById('printNoticeModal');
+            if (modal) modal.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
